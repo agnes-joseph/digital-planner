@@ -1,14 +1,15 @@
 /**
  * EXPLORATION C: "Paper Journal"
  * 
- * Visual Treatment: Warm parchment gradient with soft rose accents
- * Information Architecture: Journal-style full-page spreads
+ * Visual Treatment: Warm paper/parchment tones with terracotta accent
+ * Information Architecture: Full-page sections with dot navigation
+ * Layout: Journal-style - each view is a "spread" that you navigate between
  * 
  * Key Design Decisions:
- * - Warmer gradient (dusty rose to cream) feels personal
- * - Dot navigation mimics physical journal pages
- * - Large serif typography for warmth
- * - Interactive habit grid as centerpiece
+ * - Paper-like textures and colors feel tactile and personal
+ * - Terracotta accent is warm without being aggressive
+ * - Dot navigation mimics page dots in physical journals
+ * - Large, generous typography for readability
  * - Feels like a digital bullet journal
  */
 
@@ -23,12 +24,12 @@ const mockTasks = [
 ]
 
 const mockHabits = [
-  { id: 1, name: 'Medication' },
-  { id: 2, name: 'Exercise' },
-  { id: 3, name: 'Reading' },
-  { id: 4, name: 'Water' },
-  { id: 5, name: 'Sleep 7h+' },
-  { id: 6, name: 'Planning' },
+  { id: 1, name: 'Medication', emoji: '💊' },
+  { id: 2, name: 'Exercise', emoji: '🏃' },
+  { id: 3, name: 'Reading', emoji: '📖' },
+  { id: 4, name: 'Water', emoji: '💧' },
+  { id: 5, name: 'Sleep 7h+', emoji: '😴' },
+  { id: 6, name: 'Planning', emoji: '📝' },
 ]
 
 const pages = ['planner', 'tasks', 'timer', 'cycles', 'reflect']
@@ -39,13 +40,12 @@ export default function ExplorationC() {
   const [timerSeconds, setTimerSeconds] = useState(25 * 60)
   const [completedDays, setCompletedDays] = useState<Record<number, number[]>>({
     1: [1,2,3,5,6,7,9,10,12,13,14,15,17],
-    2: [1,3,5,8,10,12,15,17],
-    3: [2,4,6,9,11,13,16],
+    2: [1,3,5,7,9,11,13,15,17],
+    3: [2,4,6,8,10,12,14,16],
     4: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],
     5: [1,2,4,5,7,8,10,11,13,14,16,17],
     6: [1,8,15],
   })
-  const [tasks, setTasks] = useState(mockTasks)
 
   const cycleDay = 17
 
@@ -55,367 +55,781 @@ export default function ExplorationC() {
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
   }
 
-  const toggleTask = (id: number) => {
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t))
-  }
-
-  const renderPlanner = () => (
-    <div className="max-w-4xl mx-auto animate-fadeIn">
-      <div className="flex items-baseline gap-4 mb-12">
-        <h2 className="text-5xl font-light text-white tracking-tight">
-          Today
-        </h2>
-        <span className="text-lg text-white/60 italic">
-          cycle day {cycleDay}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-2 gap-16">
-        {/* Timeline Column */}
-        <div>
-          <h3 className="text-sm font-medium text-white/50 uppercase tracking-widest mb-6">
-            Schedule
-          </h3>
-          
-          <div className="space-y-3">
-            {[
-              { time: '8:00', title: 'Morning routine', duration: '1h' },
-              { time: '9:00', title: 'Deep work block', duration: '2h', highlight: true },
-              { time: '11:00', title: 'Break', duration: '30m' },
-              { time: '12:00', title: 'Lunch', duration: '1h' },
-              { time: '14:00', title: 'Study session', duration: '1.5h' },
-              { time: '16:00', title: 'Admin tasks', duration: '1h' },
-              { time: '18:00', title: 'Evening routine', duration: '2h' },
-            ].map((block, i) => (
-              <div
-                key={i}
-                className={`flex items-start gap-5 p-4 rounded-2xl transition-colors ${
-                  block.highlight 
-                    ? 'bg-white/15 backdrop-blur-xl border border-white/20' 
-                    : 'hover:bg-white/5'
-                }`}
-              >
-                <span className="text-white/40 text-sm w-12 pt-0.5">
-                  {block.time}
-                </span>
-                <div className={`w-0.5 h-10 rounded-full ${block.highlight ? 'bg-rose-300/60' : 'bg-white/20'}`} />
-                <div>
-                  <p className={`text-lg ${block.highlight ? 'text-white font-medium' : 'text-white/70'}`}>
-                    {block.title}
-                  </p>
-                  <p className="text-white/40 text-sm mt-0.5">
-                    {block.duration}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Tasks Column */}
-        <div>
-          <h3 className="text-sm font-medium text-white/50 uppercase tracking-widest mb-6">
-            Tasks
-          </h3>
-
-          <div className="space-y-2">
-            {tasks.map(task => (
-              <div
-                key={task.id}
-                className={`flex items-start gap-3 p-4 rounded-2xl transition-all cursor-pointer hover:bg-white/10 ${
-                  task.done ? 'opacity-50' : ''
-                }`}
-                onClick={() => toggleTask(task.id)}
-              >
-                <div className={`w-5 h-5 rounded-md border-2 flex-shrink-0 mt-0.5 flex items-center justify-center transition-colors ${
-                  task.done 
-                    ? 'border-rose-300/60 bg-rose-300/60' 
-                    : 'border-white/30 hover:border-white/50'
-                }`}>
-                  {task.done && (
-                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                </div>
-                <div className="flex-1">
-                  <p className={`text-white ${task.done ? 'line-through' : ''}`}>
-                    {task.title}
-                  </p>
-                  <p className="text-white/40 text-sm mt-1">
-                    {task.project} - {task.estimate}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <button className="w-full mt-4 p-4 rounded-2xl border border-dashed border-white/20 text-white/50 hover:bg-white/5 hover:border-white/30 transition-all">
-            + add task
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-
-  const renderTimer = () => (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] animate-fadeIn">
-      <p className="text-white/50 text-sm uppercase tracking-widest mb-12">
-        Focus Session
-      </p>
-
-      <div className={`text-8xl font-light tracking-tight transition-colors ${
-        timerActive ? 'text-rose-200' : 'text-white'
-      }`}>
-        {formatTime(timerSeconds)}
-      </div>
-
-      <div className="flex gap-4 mt-12">
-        <button
-          onClick={() => setTimerActive(!timerActive)}
-          className={`px-12 py-4 rounded-full text-lg font-medium transition-all ${
-            timerActive 
-              ? 'bg-white/20 text-white' 
-              : 'bg-rose-300/30 text-white hover:bg-rose-300/40'
-          }`}
-        >
-          {timerActive ? 'Pause' : 'Start'}
-        </button>
-        <button
-          onClick={() => setTimerSeconds(25 * 60)}
-          className="px-8 py-4 rounded-full border border-white/20 text-white/70 hover:bg-white/10 transition-all"
-        >
-          Reset
-        </button>
-      </div>
-
-      <div className="flex gap-3 mt-8">
-        {[15, 25, 45, 60].map(mins => (
-          <button
-            key={mins}
-            onClick={() => setTimerSeconds(mins * 60)}
-            className={`px-5 py-2 rounded-full text-sm transition-all ${
-              timerSeconds === mins * 60 
-                ? 'bg-white/20 text-white border border-white/30' 
-                : 'bg-white/5 text-white/50 hover:bg-white/10'
-            }`}
-          >
-            {mins}m
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-16 px-8 py-5 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20">
-        <p className="text-white/50 text-xs uppercase tracking-wider mb-1">Working on</p>
-        <p className="text-white text-lg">Deep work block - Building</p>
-      </div>
-    </div>
-  )
-
-  const renderCycles = () => (
-    <div className="max-w-4xl mx-auto animate-fadeIn">
-      <div className="flex items-baseline justify-between mb-12">
-        <h2 className="text-5xl font-light text-white tracking-tight">
-          Cycle 4
-        </h2>
-        <span className="text-white/50">
-          Day {cycleDay} of 28
-        </span>
-      </div>
-
-      {/* Habit Grid */}
-      <div className="rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 p-8">
-        {/* Day Numbers Header */}
-        <div className="flex mb-6 pl-28">
-          {Array.from({ length: 28 }, (_, i) => (
-            <div
-              key={i}
-              className={`w-6 text-center text-xs ${
-                i + 1 === cycleDay ? 'text-rose-300 font-semibold' : 'text-white/40'
-              }`}
-            >
-              {i + 1}
-            </div>
-          ))}
-        </div>
-
-        {/* Habit Rows */}
-        {mockHabits.map(habit => (
-          <div key={habit.id} className="flex items-center mb-4 last:mb-0">
-            <span className="w-28 text-white/70 text-sm flex-shrink-0">
-              {habit.name}
-            </span>
-            <div className="flex gap-1">
-              {Array.from({ length: 28 }, (_, i) => {
-                const isCompleted = completedDays[habit.id]?.includes(i + 1)
-                const isFuture = i + 1 > cycleDay
-                const isToday = i + 1 === cycleDay
-                
-                return (
-                  <button
-                    key={i}
-                    onClick={() => {
-                      if (!isFuture) {
-                        setCompletedDays(prev => {
-                          const current = prev[habit.id] || []
-                          if (isCompleted) {
-                            return { ...prev, [habit.id]: current.filter(d => d !== i + 1) }
-                          } else {
-                            return { ...prev, [habit.id]: [...current, i + 1] }
-                          }
-                        })
-                      }
-                    }}
-                    className={`w-5 h-5 rounded transition-all ${
-                      isToday ? 'ring-2 ring-rose-300/60' : ''
-                    } ${
-                      isFuture 
-                        ? 'bg-white/5 cursor-default' 
-                        : isCompleted 
-                          ? 'bg-rose-300/60 hover:bg-rose-300/70' 
-                          : 'bg-white/15 hover:bg-white/25 cursor-pointer'
-                    }`}
-                  />
-                )
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Cycle Summary */}
-      <div className="grid grid-cols-3 gap-4 mt-8">
-        {[
-          { label: 'Completion Rate', value: '76%' },
-          { label: 'Current Streak', value: '12 days' },
-          { label: 'Best Habit', value: 'Water' },
-        ].map((stat, i) => (
-          <div key={i} className="rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 p-6 text-center">
-            <p className="text-3xl font-light text-white mb-1">{stat.value}</p>
-            <p className="text-white/50 text-sm">{stat.label}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Phase Info */}
-      <div className="mt-8 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 p-6">
-        <h3 className="text-white font-medium mb-4">Luteal Phase Insights</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 rounded-xl bg-white/5">
-            <p className="text-white/50 text-sm mb-1">Energy Level</p>
-            <p className="text-white">Moderate - winding down</p>
-          </div>
-          <div className="p-4 rounded-xl bg-white/5">
-            <p className="text-white/50 text-sm mb-1">Recommended Focus</p>
-            <p className="text-white">Detail work, organization</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-
-  const renderReflect = () => (
-    <div className="max-w-2xl mx-auto animate-fadeIn">
-      <h2 className="text-5xl font-light text-white tracking-tight mb-12">
-        Reflect
-      </h2>
-
-      <div className="space-y-6">
-        <div className="rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 p-6">
-          <label className="text-white/50 text-sm block mb-3">How are you feeling today?</label>
-          <div className="flex gap-3">
-            {['Low', 'Okay', 'Good', 'Great'].map((mood, i) => (
-              <button
-                key={mood}
-                className="flex-1 py-3 rounded-xl bg-white/5 text-white/70 hover:bg-white/15 hover:text-white transition-all"
-              >
-                {mood}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 p-6">
-          <label className="text-white/50 text-sm block mb-3">One thing you&apos;re grateful for</label>
-          <textarea 
-            className="w-full bg-transparent text-white placeholder-white/30 resize-none outline-none text-lg"
-            rows={3}
-            placeholder="Write here..."
-          />
-        </div>
-
-        <div className="rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 p-6">
-          <label className="text-white/50 text-sm block mb-3">Notes for tomorrow</label>
-          <textarea 
-            className="w-full bg-transparent text-white placeholder-white/30 resize-none outline-none text-lg"
-            rows={3}
-            placeholder="Write here..."
-          />
-        </div>
-      </div>
-    </div>
-  )
-
   return (
-    <div 
-      className="min-h-screen w-full relative overflow-hidden"
-      style={{
-        background: 'linear-gradient(160deg, #9B8A85 0%, #B5A69E 25%, #C9B9B0 50%, #D8CCC5 75%, #E5DDD8 100%)'
-      }}
-    >
-      {/* Warm overlay */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at 30% 20%, rgba(180, 130, 120, 0.15) 0%, transparent 50%)'
-        }}
-      />
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#f7f3ee',
+      fontFamily: "'Crimson Pro', Georgia, serif",
+      color: '#4a423a',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Paper texture overlay */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")',
+        opacity: 0.03,
+        pointerEvents: 'none',
+      }} />
 
       {/* Header */}
-      <header className="relative flex justify-between items-center px-12 py-6 border-b border-white/10">
-        <h1 className="text-2xl font-light text-white tracking-widest lowercase">
+      <header style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '24px 48px',
+        borderBottom: '1px solid #e5ddd3',
+      }}>
+        <h1 style={{
+          fontSize: '24px',
+          fontWeight: 400,
+          color: '#2a2420',
+          margin: 0,
+          letterSpacing: '2px',
+          textTransform: 'lowercase',
+        }}>
           tempo
         </h1>
         
-        <span className="text-white/50 text-sm">
+        <div style={{
+          fontSize: '14px',
+          color: '#8a8078',
+          fontFamily: "'Inter', sans-serif",
+        }}>
           Wednesday, April 23
-        </span>
+        </div>
       </header>
 
       {/* Page Content */}
-      <main className="relative px-12 py-12">
-        {currentPage === 0 && renderPlanner()}
-        {currentPage === 1 && renderPlanner()}
-        {currentPage === 2 && renderTimer()}
-        {currentPage === 3 && renderCycles()}
-        {currentPage === 4 && renderReflect()}
+      <main style={{
+        maxWidth: '900px',
+        margin: '0 auto',
+        padding: '48px',
+        minHeight: 'calc(100vh - 160px)',
+      }}>
+        {/* Planner Page */}
+        {currentPage === 0 && (
+          <div style={{ animation: 'fadeIn 0.3s ease' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'baseline',
+              gap: '16px',
+              marginBottom: '48px',
+            }}>
+              <h2 style={{
+                fontSize: '48px',
+                fontWeight: 300,
+                color: '#2a2420',
+                margin: 0,
+                letterSpacing: '-1px',
+              }}>
+                Today
+              </h2>
+              <span style={{
+                fontSize: '18px',
+                color: '#b07a5a',
+                fontStyle: 'italic',
+              }}>
+                cycle day {cycleDay}
+              </span>
+            </div>
+
+            {/* Two Column Layout */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '64px',
+            }}>
+              {/* Timeline Column */}
+              <div>
+                <h3 style={{
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#8a8078',
+                  textTransform: 'uppercase',
+                  letterSpacing: '2px',
+                  marginBottom: '24px',
+                  fontFamily: "'Inter', sans-serif",
+                }}>
+                  Schedule
+                </h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {[
+                    { time: '8:00', title: 'Morning routine', duration: '1h' },
+                    { time: '9:00', title: 'Deep work block', duration: '2h', highlight: true },
+                    { time: '11:00', title: 'Break', duration: '30m' },
+                    { time: '12:00', title: 'Lunch', duration: '1h' },
+                    { time: '14:00', title: 'Study session', duration: '1.5h' },
+                    { time: '16:00', title: 'Admin tasks', duration: '1h' },
+                    { time: '18:00', title: 'Evening routine', duration: '2h' },
+                  ].map((block, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '20px',
+                        padding: block.highlight ? '16px 20px' : '8px 0',
+                        backgroundColor: block.highlight ? '#f0e9df' : 'transparent',
+                        borderRadius: block.highlight ? '8px' : '0',
+                        borderLeft: block.highlight ? '3px solid #b07a5a' : 'none',
+                      }}
+                    >
+                      <span style={{
+                        width: '50px',
+                        fontSize: '14px',
+                        color: '#a09890',
+                        fontFamily: "'Inter', sans-serif",
+                      }}>
+                        {block.time}
+                      </span>
+                      <div>
+                        <div style={{
+                          fontSize: '18px',
+                          color: block.highlight ? '#2a2420' : '#5a524a',
+                          fontWeight: block.highlight ? 500 : 400,
+                        }}>
+                          {block.title}
+                        </div>
+                        <div style={{
+                          fontSize: '13px',
+                          color: '#a09890',
+                          fontFamily: "'Inter', sans-serif",
+                          marginTop: '2px',
+                        }}>
+                          {block.duration}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tasks Column */}
+              <div>
+                <h3 style={{
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#8a8078',
+                  textTransform: 'uppercase',
+                  letterSpacing: '2px',
+                  marginBottom: '24px',
+                  fontFamily: "'Inter', sans-serif",
+                }}>
+                  Tasks
+                </h3>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {mockTasks.map(task => (
+                    <div
+                      key={task.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '12px',
+                        padding: '12px 0',
+                        borderBottom: '1px solid #e5ddd3',
+                        opacity: task.done ? 0.5 : 1,
+                      }}
+                    >
+                      <div style={{
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '4px',
+                        border: `2px solid ${task.done ? '#b07a5a' : '#c5b8a8'}`,
+                        backgroundColor: task.done ? '#b07a5a' : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                        marginTop: '2px',
+                      }}>
+                        {task.done && '✓'}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{
+                          fontSize: '17px',
+                          color: '#2a2420',
+                          textDecoration: task.done ? 'line-through' : 'none',
+                        }}>
+                          {task.title}
+                        </div>
+                        <div style={{
+                          fontSize: '13px',
+                          color: '#a09890',
+                          marginTop: '4px',
+                          fontFamily: "'Inter', sans-serif",
+                        }}>
+                          {task.project} · {task.estimate}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button style={{
+                  marginTop: '20px',
+                  padding: '12px 20px',
+                  border: '1px dashed #c5b8a8',
+                  borderRadius: '8px',
+                  backgroundColor: 'transparent',
+                  color: '#8a8078',
+                  fontSize: '15px',
+                  cursor: 'pointer',
+                  width: '100%',
+                  fontFamily: 'inherit',
+                }}>
+                  + add task
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Timer Page */}
+        {currentPage === 2 && (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '60vh',
+            animation: 'fadeIn 0.3s ease',
+          }}>
+            <h2 style={{
+              fontSize: '18px',
+              fontWeight: 400,
+              color: '#8a8078',
+              margin: '0 0 48px 0',
+              letterSpacing: '3px',
+              textTransform: 'uppercase',
+              fontFamily: "'Inter', sans-serif",
+            }}>
+              Focus Session
+            </h2>
+
+            {/* Timer Display */}
+            <div style={{
+              fontSize: '120px',
+              fontWeight: 300,
+              color: timerActive ? '#b07a5a' : '#2a2420',
+              letterSpacing: '-4px',
+              fontFamily: "'Crimson Pro', Georgia, serif",
+              transition: 'color 0.3s ease',
+            }}>
+              {formatTime(timerSeconds)}
+            </div>
+
+            {/* Timer Controls */}
+            <div style={{
+              display: 'flex',
+              gap: '16px',
+              marginTop: '48px',
+            }}>
+              <button
+                onClick={() => setTimerActive(!timerActive)}
+                style={{
+                  padding: '16px 48px',
+                  border: 'none',
+                  borderRadius: '40px',
+                  backgroundColor: timerActive ? '#2a2420' : '#b07a5a',
+                  color: '#fff',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  fontFamily: "'Inter', sans-serif",
+                  letterSpacing: '1px',
+                }}
+              >
+                {timerActive ? 'Pause' : 'Start'}
+              </button>
+              <button
+                onClick={() => setTimerSeconds(25 * 60)}
+                style={{
+                  padding: '16px 32px',
+                  border: '1px solid #c5b8a8',
+                  borderRadius: '40px',
+                  backgroundColor: 'transparent',
+                  color: '#5a524a',
+                  fontSize: '16px',
+                  cursor: 'pointer',
+                  fontFamily: "'Inter', sans-serif",
+                }}
+              >
+                Reset
+              </button>
+            </div>
+
+            {/* Preset Buttons */}
+            <div style={{
+              display: 'flex',
+              gap: '12px',
+              marginTop: '32px',
+            }}>
+              {[15, 25, 45, 60].map(mins => (
+                <button
+                  key={mins}
+                  onClick={() => setTimerSeconds(mins * 60)}
+                  style={{
+                    padding: '8px 16px',
+                    border: timerSeconds === mins * 60 ? '1px solid #b07a5a' : '1px solid #e5ddd3',
+                    borderRadius: '20px',
+                    backgroundColor: timerSeconds === mins * 60 ? '#f0e9df' : 'transparent',
+                    color: '#5a524a',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    fontFamily: "'Inter', sans-serif",
+                  }}
+                >
+                  {mins}m
+                </button>
+              ))}
+            </div>
+
+            {/* Current Task */}
+            <div style={{
+              marginTop: '64px',
+              padding: '20px 32px',
+              backgroundColor: '#f0e9df',
+              borderRadius: '12px',
+              textAlign: 'center',
+            }}>
+              <div style={{
+                fontSize: '13px',
+                color: '#a09890',
+                marginBottom: '8px',
+                fontFamily: "'Inter', sans-serif",
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+              }}>
+                Working on
+              </div>
+              <div style={{
+                fontSize: '18px',
+                color: '#2a2420',
+              }}>
+                Deep work block · Building
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cycles Page */}
+        {currentPage === 3 && (
+          <div style={{ animation: 'fadeIn 0.3s ease' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'baseline',
+              justifyContent: 'space-between',
+              marginBottom: '48px',
+            }}>
+              <h2 style={{
+                fontSize: '48px',
+                fontWeight: 300,
+                color: '#2a2420',
+                margin: 0,
+              }}>
+                Cycle 4
+              </h2>
+              <span style={{
+                fontSize: '16px',
+                color: '#8a8078',
+              }}>
+                Day {cycleDay} of 28
+              </span>
+            </div>
+
+            {/* Habit Grid */}
+            <div style={{
+              backgroundColor: '#fff',
+              borderRadius: '16px',
+              padding: '32px',
+              border: '1px solid #e5ddd3',
+            }}>
+              {/* Day Numbers Header */}
+              <div style={{
+                display: 'flex',
+                marginBottom: '24px',
+                paddingLeft: '100px',
+              }}>
+                {Array.from({ length: 28 }, (_, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      width: '24px',
+                      textAlign: 'center',
+                      fontSize: '11px',
+                      color: i + 1 === cycleDay ? '#b07a5a' : '#a09890',
+                      fontWeight: i + 1 === cycleDay ? 600 : 400,
+                      fontFamily: "'Inter', sans-serif",
+                    }}
+                  >
+                    {i + 1}
+                  </div>
+                ))}
+              </div>
+
+              {/* Habit Rows */}
+              {mockHabits.map(habit => (
+                <div
+                  key={habit.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginBottom: '16px',
+                  }}
+                >
+                  <div style={{
+                    width: '100px',
+                    fontSize: '14px',
+                    color: '#5a524a',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}>
+                    <span style={{ fontSize: '16px' }}>{habit.emoji}</span>
+                    {habit.name}
+                  </div>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    {Array.from({ length: 28 }, (_, i) => {
+                      const isCompleted = completedDays[habit.id]?.includes(i + 1)
+                      const isFuture = i + 1 > cycleDay
+                      const isToday = i + 1 === cycleDay
+                      
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            if (!isFuture) {
+                              setCompletedDays(prev => {
+                                const current = prev[habit.id] || []
+                                if (isCompleted) {
+                                  return { ...prev, [habit.id]: current.filter(d => d !== i + 1) }
+                                } else {
+                                  return { ...prev, [habit.id]: [...current, i + 1] }
+                                }
+                              })
+                            }
+                          }}
+                          style={{
+                            width: '20px',
+                            height: '20px',
+                            borderRadius: '4px',
+                            border: isToday ? '2px solid #b07a5a' : 'none',
+                            backgroundColor: 
+                              isFuture ? '#f0ece7' :
+                              isCompleted ? '#b07a5a' : '#e5ddd3',
+                            cursor: isFuture ? 'default' : 'pointer',
+                            transition: 'all 0.15s ease',
+                            padding: 0,
+                          }}
+                        />
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Cycle Summary */}
+            <div style={{
+              marginTop: '32px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '24px',
+            }}>
+              <div style={{
+                padding: '24px',
+                backgroundColor: '#fff',
+                borderRadius: '12px',
+                border: '1px solid #e5ddd3',
+                textAlign: 'center',
+              }}>
+                <div style={{
+                  fontSize: '32px',
+                  fontWeight: 300,
+                  color: '#2a2420',
+                }}>
+                  76%
+                </div>
+                <div style={{
+                  fontSize: '13px',
+                  color: '#a09890',
+                  marginTop: '4px',
+                  fontFamily: "'Inter', sans-serif",
+                }}>
+                  completion rate
+                </div>
+              </div>
+              <div style={{
+                padding: '24px',
+                backgroundColor: '#fff',
+                borderRadius: '12px',
+                border: '1px solid #e5ddd3',
+                textAlign: 'center',
+              }}>
+                <div style={{
+                  fontSize: '32px',
+                  fontWeight: 300,
+                  color: '#2a2420',
+                }}>
+                  5
+                </div>
+                <div style={{
+                  fontSize: '13px',
+                  color: '#a09890',
+                  marginTop: '4px',
+                  fontFamily: "'Inter', sans-serif",
+                }}>
+                  perfect days
+                </div>
+              </div>
+              <div style={{
+                padding: '24px',
+                backgroundColor: '#fff',
+                borderRadius: '12px',
+                border: '1px solid #e5ddd3',
+                textAlign: 'center',
+              }}>
+                <div style={{
+                  fontSize: '32px',
+                  fontWeight: 300,
+                  color: '#2a2420',
+                }}>
+                  11
+                </div>
+                <div style={{
+                  fontSize: '13px',
+                  color: '#a09890',
+                  marginTop: '4px',
+                  fontFamily: "'Inter', sans-serif",
+                }}>
+                  days remaining
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tasks Page */}
+        {currentPage === 1 && (
+          <div style={{ animation: 'fadeIn 0.3s ease' }}>
+            <h2 style={{
+              fontSize: '48px',
+              fontWeight: 300,
+              color: '#2a2420',
+              margin: '0 0 48px 0',
+            }}>
+              Projects
+            </h2>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '24px',
+            }}>
+              {['Building', 'Study', 'Routines', 'Chores', 'Admin'].map(project => (
+                <div
+                  key={project}
+                  style={{
+                    padding: '24px',
+                    backgroundColor: '#fff',
+                    borderRadius: '12px',
+                    border: '1px solid #e5ddd3',
+                    cursor: 'pointer',
+                    transition: 'box-shadow 0.15s ease',
+                  }}
+                >
+                  <h3 style={{
+                    fontSize: '20px',
+                    fontWeight: 400,
+                    color: '#2a2420',
+                    margin: '0 0 16px 0',
+                  }}>
+                    {project}
+                  </h3>
+                  <div style={{
+                    fontSize: '14px',
+                    color: '#a09890',
+                    fontFamily: "'Inter', sans-serif",
+                  }}>
+                    {mockTasks.filter(t => t.project === project).length} tasks
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Reflect/Insights Page */}
+        {currentPage === 4 && (
+          <div style={{ animation: 'fadeIn 0.3s ease' }}>
+            <h2 style={{
+              fontSize: '48px',
+              fontWeight: 300,
+              color: '#2a2420',
+              margin: '0 0 48px 0',
+            }}>
+              Reflect
+            </h2>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '32px',
+            }}>
+              {/* Time by Category */}
+              <div style={{
+                padding: '32px',
+                backgroundColor: '#fff',
+                borderRadius: '16px',
+                border: '1px solid #e5ddd3',
+              }}>
+                <h3 style={{
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#8a8078',
+                  textTransform: 'uppercase',
+                  letterSpacing: '2px',
+                  marginBottom: '24px',
+                  fontFamily: "'Inter', sans-serif",
+                }}>
+                  This Week
+                </h3>
+
+                {[
+                  { name: 'Building', hours: 12, color: '#b07a5a' },
+                  { name: 'Study', hours: 8, color: '#7a9eb8' },
+                  { name: 'Routines', hours: 14, color: '#9eb87a' },
+                  { name: 'Chores', hours: 5, color: '#b8a07a' },
+                ].map(cat => (
+                  <div key={cat.name} style={{ marginBottom: '20px' }}>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      marginBottom: '8px',
+                    }}>
+                      <span style={{ fontSize: '15px', color: '#5a524a' }}>
+                        {cat.name}
+                      </span>
+                      <span style={{
+                        fontSize: '14px',
+                        color: '#a09890',
+                        fontFamily: "'Inter', sans-serif",
+                      }}>
+                        {cat.hours}h
+                      </span>
+                    </div>
+                    <div style={{
+                      height: '8px',
+                      backgroundColor: '#f0ece7',
+                      borderRadius: '4px',
+                      overflow: 'hidden',
+                    }}>
+                      <div style={{
+                        width: `${(cat.hours / 14) * 100}%`,
+                        height: '100%',
+                        backgroundColor: cat.color,
+                        borderRadius: '4px',
+                      }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Weekly Summary */}
+              <div style={{
+                padding: '32px',
+                backgroundColor: '#fff',
+                borderRadius: '16px',
+                border: '1px solid #e5ddd3',
+              }}>
+                <h3 style={{
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#8a8078',
+                  textTransform: 'uppercase',
+                  letterSpacing: '2px',
+                  marginBottom: '24px',
+                  fontFamily: "'Inter', sans-serif",
+                }}>
+                  Summary
+                </h3>
+
+                <div style={{
+                  fontSize: '64px',
+                  fontWeight: 300,
+                  color: '#2a2420',
+                  marginBottom: '8px',
+                }}>
+                  39h
+                </div>
+                <div style={{
+                  fontSize: '15px',
+                  color: '#a09890',
+                  marginBottom: '32px',
+                }}>
+                  total time tracked
+                </div>
+
+                <div style={{
+                  padding: '16px',
+                  backgroundColor: '#f0e9df',
+                  borderRadius: '8px',
+                  fontSize: '15px',
+                  color: '#5a524a',
+                  lineHeight: 1.6,
+                }}>
+                  You spent more time on routines this week than usual. 
+                  Building projects took 3 fewer hours than planned.
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
-      {/* Dot Navigation */}
-      <nav className="fixed bottom-8 left-1/2 -translate-x-1/2">
-        <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-xl border border-white/20">
-          {pages.map((page, i) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(i)}
-              className={`w-3 h-3 rounded-full transition-all ${
-                currentPage === i 
-                  ? 'bg-white scale-125' 
-                  : 'bg-white/30 hover:bg-white/50'
-              }`}
-              title={page}
-            />
-          ))}
-        </div>
+      {/* Page Navigation Dots */}
+      <nav style={{
+        position: 'fixed',
+        bottom: '32px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        gap: '16px',
+        padding: '16px 24px',
+        backgroundColor: 'rgba(255,255,255,0.9)',
+        borderRadius: '40px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+      }}>
+        {pages.map((page, i) => (
+          <button
+            key={page}
+            onClick={() => setCurrentPage(i)}
+            style={{
+              width: currentPage === i ? '32px' : '12px',
+              height: '12px',
+              borderRadius: '6px',
+              border: 'none',
+              backgroundColor: currentPage === i ? '#b07a5a' : '#d5ccc2',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              padding: 0,
+            }}
+            title={page}
+          />
+        ))}
       </nav>
 
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
         }
       `}</style>
     </div>
